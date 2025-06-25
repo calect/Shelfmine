@@ -1,0 +1,1 @@
+Aplicação para catalogar livros com FastAPI, React, PostgreSQL e Docker.
