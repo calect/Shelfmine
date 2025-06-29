@@ -25,7 +25,8 @@ services:
     ports:
       - "8000:8000" 
     environment: 
-      - DATABASE_URL=${DATABASE_URL} # URL de conexão com o banco de dados 
+      - DATABASE_URL=${DATABASE_URL} # URL de conexão com o banco de dados
+      - SECRET_KEY=${SECRET_KEY} # chave secreta para o backend
     depends_on:
       - db # garantindo que o banco de dados esteja rodando antes do backend
   
