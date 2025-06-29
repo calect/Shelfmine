@@ -26,14 +26,6 @@ def get_password_hash(password: str) -> str:
 
 # Chave secreta para assinar os tokens JWT
 SECRET_KEY = os.getenv("SECRET_KEY")
-# ==========================================================
-# LINHAS DE DEBUG: Vamos imprimir o valor para ver o que o Python está enxergando.
-print("--- INICIANDO VERIFICAÇÃO DE DEBUG ---")
-print(f"!!! A CHAVE SECRETA CARREGADA É: {SECRET_KEY} !!!")
-print(f"!!! O TIPO DA CHAVE SECRETA É: {type(SECRET_KEY)} !!!")
-print("--- FIM DA VERIFICAÇÃO DE DEBUG ---")
-# ==========================================================
-
 ALGORITHM = "HS256" 
 ACESS_TOKEN_EXPIRE_MINUTES = 30  # Login expira em 30 min
 
