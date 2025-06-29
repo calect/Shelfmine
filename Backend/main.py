@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
+import httpx
+import os
+
 
 import crud
 import models
@@ -81,3 +84,28 @@ def delete_user_item(
     crud.delete_item(db, item_id=item_id)
     return db_item
 
+#============ Endpoint para Busca de Livros pela API GOOGLR BOOKS=============  
+@app.get("/books/search/",tags=["Busca externa"])
+
+#usando um query q de busca para procurar os livros.
+async def search_books(q:str):
+    api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Chave da API do Google Books não configurada."
+        )
+    #Monsta a url e busca até 10 resultados
+    url = f"https://www.googleapis.com/books/v1/volumes?q={q}&key={api_key}"
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            google_response = await client.get(url)
+            google_response.raise_for_status()  # Lança um erro se a resposta não for 2xx
+            return google_response.json()
+
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=503, 
+                detail="Erro de comunicação com API do google"
+                )

@@ -27,6 +27,7 @@ services:
     environment: 
       - DATABASE_URL=${DATABASE_URL} # URL de conexão com o banco de dados
       - SECRET_KEY=${SECRET_KEY} # chave secreta para o backend
+      - GOOGLE_BOOKS_API_KEY=${GOOGLE_BOOKS_API_KEY} 
     depends_on:
       - db # garantindo que o banco de dados esteja rodando antes do backend
   
