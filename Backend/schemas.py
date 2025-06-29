@@ -1,4 +1,25 @@
 from pydantic import BaseModel
+from typing import List # Para listas
+
+# --- Fluxo de Item --- 
+
+# Schema base para um Item
+class ItemBase(BaseModel):
+    title: str
+    description: str | None = None
+
+# Schema para criar um Item (recebido pela API)
+class ItemCreate(ItemBase):
+    pass
+
+# Schema para ler um Item (retornado pela API)
+class Item(ItemBase):
+    id: int
+    owner_id: int
+
+    class Config:
+        from_attributes = True
+
 
 # --- Fluxo de User---
 
@@ -11,6 +32,7 @@ class UserCreate(BaseModel):
 class User(BaseModel):
     id: int
     email: str
+    items: List[Item] = [] # Mostra os itens que o usuário possui
 
     class Config:
         from_attributes = True # Pydantic irá ler os atributos do modelo SQLAlchemy

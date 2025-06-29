@@ -18,3 +18,29 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+# --- Funções CRUD para Item --- 
+
+def get_items(db: Session, skip: int = 0, limit: int = 100):
+    """Retorna uma lista de todos os itens. """
+    return db.query(models.Item).offset(skip).limit(limit).all()
+
+def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
+    """Cria um novo item e o associa a um usuário pelo seu ID."""
+    db_item = models.Item(**item.model_dump(), owner_id=user_id)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+def get_item(db: Session, item_id: int):
+    """Busca um item específico pelo seu ID."""
+    return db.query(models.Item).filter(models.Item.id == item_id).first()
+
+def delete_item(db: Session, item_id: int):
+    """Deleta um item do banco de dados pelo seu ID."""
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if db_item:
+        db.delete(db_item)
+        db.commit()
+    return db_item

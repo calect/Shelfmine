@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from contextlib import asynccontextmanager
 
 import crud
 import models
@@ -8,7 +9,7 @@ import schemas
 import security
 import database
 
-# Criando as tavelas no banco de dados
+# Criando as tabelas no banco de dados
 database.create_db_and_tables()
 
 app = FastAPI()
@@ -45,3 +46,38 @@ def login_acess_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Sess
 
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+#============ Endpoint para Criar um Item para o Usuário Logado ============
+@app.post("/users/me/items/", response_model=schemas.Item, tags=["Items"])
+def create_item_for_current_user(
+    item: schemas.ItemCreate,
+    current_user: schemas.User = Depends(security.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    """
+    Cria um item (livro) associado ao usuário atualmente autenticado.
+    O FastAPI irá garantir que apenas usuários com um token válido possam acessar este endpoint.
+    """
+    return crud.create_user_item(db=db, item=item, user_id=current_user.id)
+
+#============ Endpoint para Deletar um Item ============
+@app.delete("/items/{item_id}", response_model=schemas.Item, tags=["Items"])
+def delete_user_item(
+    item_id: int,
+    current_user: schemas.User = Depends(security.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    """
+    Deleta um item. Apenas o dono do item pode deletá-lo.
+    """
+    db_item = crud.get_item(db, item_id=item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item não encontrado")
+    
+    # Verifica se o usuário logado é o dono do item
+    if db_item.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Sem autorização para deletar esse item")
+
+    crud.delete_item(db, item_id=item_id)
+    return db_item
+
