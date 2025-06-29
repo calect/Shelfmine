@@ -1,0 +1,51 @@
+services:
+  #================= Banco de Dados  =================
+  # Configuração do serviço do PostgreSQL
+  db:
+    image: postgres:15-alpine # setando a imagem oficial do PostgreSQL, versão 15, na variante alpine.
+    container_name: shelfmine_db # nome do container
+    volumes:
+      - db_data:/var/lib/postgresql/data # garantindo a persistência dos dados
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER} # usuário do banco de dados
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # senha do banco de dados  
+      - POSTGRES_DB=${POSTGRES_DB} # nome do banco de dados
+    ports:
+      - "5433:5432" # mapeando a porta 5432 do container para a porta 5433 do host
+    restart: unless-stopped # reinicia o container em caso de falha
+
+
+  #================= Backend ==================
+  backend:
+    build:
+      context: ./backend
+    container_name: shelfmine_back
+    volumes:
+      - ./backend:/app # setando o diretório do backend
+    ports:
+      - "8000:8000" 
+    environment: 
+      - DATABASE_URL=${DATABASE_URL} # URL de conexão com o banco de dados
+      - SECRET_KEY=${SECRET_KEY} # chave secreta para o backend
+    depends_on:
+      - db # garantindo que o banco de dados esteja rodando antes do backend
+  
+
+  #================= Frontend =================
+  frontend:
+    build:
+      context: ./frontend
+    container_name: shelfmine_front
+    volumes:
+      - ./frontend:/app # setando o diretório do frontend
+      - /app/node_modules # garantindo que os node_modules sejam persistentes
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend 
+    stdin_open: true # permitindo a interação com o terminal do container
+    tty: true # mantendo o terminal ativo
+# ================= DECLARAÇÃO DOS VOLUMES =================
+volumes:
+  db_data: # volume para persistência dos dados do banco de dados
+    driver: local # usando o driver local para o volume
