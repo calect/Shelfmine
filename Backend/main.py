@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import os
 
@@ -16,6 +17,21 @@ import database
 database.create_db_and_tables()
 
 app = FastAPI()
+
+# Configuração do CORS
+# pra lidar com o problema do navegador bloquear as requisiçoes,
+# ja que o front e o back estao em origens diferentes
+origins = [
+    "http://localhost:3000", # A origem do frontend React
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Permite todos os métodos (GET, POST, etc.)
+    allow_headers=["*"], # Permite todos os cabeçalhos
+)
 
 #============ Endpoint para cadastro de usuário ============
 @app.post("/users/", response_model=schemas.User)
