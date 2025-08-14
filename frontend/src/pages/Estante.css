@@ -1,0 +1,9 @@
+.estante-container {
+  padding: 24px;
+}
+
+.grid-de-livros {
+  display: flex;
+  flex-wrap: wrap; /* Faz os cards quebrarem para a próxima linha se não couberem */
+  gap: 24px; /* Aumenta o espaçamento entre os cards */
+}

@@ -1,0 +1,27 @@
+/* /frontend/src/components/ItemCard.css */
+
+.item-card {
+  border: 1px solid #dddddd; /* Borda cinza clara */
+  border-radius: 8px; /* Bordas arredondadas */
+  padding: 16px; /* Espaçamento interno */
+  width: 200px;
+  text-align: center;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  transition: transform 0.2s; /* Animação suave */
+}
+
+.item-card:hover {
+  transform: translateY(-5px); /* Efeito de "levantar" ao passar o mouse */
+}
+
+.item-card h4 {
+  margin-top: 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.item-card p {
+  color: #666;
+  font-size: 0.9em;
+}
